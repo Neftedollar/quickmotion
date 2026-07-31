@@ -134,12 +134,17 @@ ListView {
                 duration: Motion.ms(root.settlePause)
             }
 
+            // The settle deliberately does not use a spatial curve. Those
+            // overshoot by design, and overshooting on the way down means
+            // dipping below the resting size before returning to it — a
+            // visible wobble that reads as a bug rather than as weight.
+            // Deceleration is what "coming to rest" actually looks like.
             NumberAnimation {
                 property: "scale"
                 to: 1
-                duration: Motion.dur.fastSpatial
+                duration: Motion.dur.emphasizedDecel
                 easing.type: Easing.BezierSpline
-                easing.bezierCurve: Motion.curve.fastSpatial
+                easing.bezierCurve: Motion.curve.emphasizedDecel
             }
         }
     }
