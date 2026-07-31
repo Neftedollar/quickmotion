@@ -8,6 +8,7 @@ ColourAnim 1.0 ColourAnim.qml
 Appear 1.0 Appear.qml
 AnimatedRow 1.0 AnimatedRow.qml
 AnimatedStack 1.0 AnimatedStack.qml
+Genie 1.0 Genie.qml
 MotionShape 1.0 MotionShape.qml
 Shake 1.0 Shake.qml
 Pressable 1.0 Pressable.qml

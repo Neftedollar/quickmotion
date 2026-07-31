@@ -32,6 +32,12 @@ fi
 install -d "$TARGET"
 install -m 0644 "$here"/QuickMotion/*.qml "$here"/QuickMotion/qmldir "$TARGET/"
 
+# Compiled shaders for Genie. Built here and shipped ready, so consumers
+# never need qt6-shadertools — the source .vert/.frag go along for anyone
+# who wants to check what they are running.
+install -d "$TARGET/shaders"
+install -m 0644 "$here"/QuickMotion/shaders/* "$TARGET/shaders/"
+
 echo "installed to $TARGET"
 echo
 echo "use it with:"

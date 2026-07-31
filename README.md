@@ -134,7 +134,7 @@ Appear {
     shown: expanded     // bind it; nothing else to call
     scale: 0.96
     slide: 16
-    from: Appear.Bottom
+    from: Appear.BottomEdge
 }
 ```
 
@@ -146,6 +146,43 @@ rather than three overlapping ones.
 Entry and exit take different roles by default. Something arriving is worth
 watching; something leaving should get out of the way. Set `exitRole` to
 `enterRole` if you disagree.
+
+## Genie
+
+The macOS minimise, where a window pours into a point on the dock.
+
+It is worth saying plainly, because it is the usual misconception: this is
+not a sequence of animations. There is no shrink, then a bend, then a
+slide. One number goes from 0 to 1 and a vertex shader remaps the geometry
+nonlinearly — everything that looks like choreography falls out of the
+remapping. Nothing here can be built out of `NumberAnimation`s, which is
+why this is the one component that ships a shader.
+
+```qml
+Genie {
+    anchors.fill: windowView
+    sourceItem: windowView
+    edge: Genie.BottomEdge
+    targetX: dockIcon.x + dockIcon.width / 2
+    targetY: dock.y
+    minimized: collapsed
+}
+```
+
+`edge` is not decoration. It names the side that reaches the target first,
+and the funnel is built along that axis: the front sweeps in from that edge
+while the two perpendicular sides squeeze together. Aim at a dock on the
+left and the surface narrows vertically, not horizontally. Keeping a
+vertical squeeze and merely moving the endpoint sideways gives something
+that slides rather than pours, which is the tell.
+
+`neckWidth` is how much of the surface sits inside the funnel at once —
+small for a tight spout that whips through, large for a lazy stretch closer
+to a fold. Below about 0.15 the mesh is too coarse to bend smoothly and the
+neck goes faceted.
+
+The shaders are compiled at install time and shipped ready, so consumers
+need `qt6-shadertools` only to rebuild them.
 
 ## Reduced motion
 
@@ -173,6 +210,15 @@ Motion.scale = animationsEnabled ? 1 : 0
 | `SlideIn` | a panel arriving from an edge |
 | `Stagger` | delays for cascading entries |
 | `MotionShape` | a drawn shape, optionally resolving to a circle |
+| `Genie` | a surface poured into a point, the macOS way |
+
+Edge enums are spelled `TopEdge`, `BottomEdge`, `LeftEdge`, `RightEdge`
+rather than the obvious four names. `Item` already defines `Top`, `Bottom`,
+`Left` and `Right` as transform origins, and a base type's enum shadows one
+declared in a QML component — `Appear.Bottom` would silently resolve to 7
+instead of the declared value. It stays self-consistent as long as both
+sides of a comparison spell it the same way, so it fails only for a caller
+who passes the literal the declaration promised.
 
 `Shake` defaults to animating the anchor offset rather than `x`, because an
 item centred with anchors ignores `x` entirely — animating it there does
@@ -200,6 +246,7 @@ mid-animation.
 ```sh
 QML_IMPORT_PATH=. qs -p demo/gallery.qml   # everything at once
 QML_IMPORT_PATH=. qs -p demo/dots.qml      # just the row
+QML_IMPORT_PATH=. qs -p demo/genie.qml     # four docks, four directions
 ```
 
 A row that fills and empties itself is the only way to actually see an exit
