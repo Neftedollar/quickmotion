@@ -41,7 +41,7 @@ ShellRoot {
             Item {
                 width: 90; height: 90
                 Rectangle { id: c; anchors.fill: parent; radius: 16; color: "#a3c9e9" }
-                Appear { target: c; shown: win.toggled; scale: 0.8; slide: 40; from: Appear.Bottom }
+                Appear { target: c; shown: win.toggled; scale: 0.8; slide: 40; from: Appear.BottomEdge }
                 Text { anchors.top: parent.bottom; anchors.topMargin: 8
                        anchors.horizontalCenter: parent.horizontalCenter
                        text: "+ slide"; color: "#6d7876"; font.pixelSize: 11 }
@@ -51,7 +51,7 @@ ShellRoot {
             Item {
                 width: 90; height: 90
                 Rectangle { id: d; anchors.fill: parent; radius: 16; color: "#a3c9e9" }
-                Appear { target: d; shown: win.toggled; scale: 0.6; slide: 30; from: Appear.Right; spin: -25 }
+                Appear { target: d; shown: win.toggled; scale: 0.6; slide: 30; from: Appear.RightEdge; spin: -25 }
                 Text { anchors.top: parent.bottom; anchors.topMargin: 8
                        anchors.horizontalCenter: parent.horizontalCenter
                        text: "+ spin"; color: "#6d7876"; font.pixelSize: 11 }

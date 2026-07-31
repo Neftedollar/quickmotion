@@ -10,7 +10,7 @@ import QtQuick
 //         shown: expanded
 //         scale: 0.96
 //         slide: 16
-//         from: Appear.Bottom
+//         from: Appear.BottomEdge
 //     }
 //
 // Every effect beyond the fade is off until given a value, so a plain fade
@@ -25,11 +25,15 @@ import QtQuick
 Item {
     id: root
 
+    // Spelled with the Edge suffix because Item already defines Top,
+    // Bottom, Left and Right as transform origins, and a base type's enum
+    // shadows one declared here — the plain names never reach this
+    // declaration at all.
     enum Edge {
-        Top,
-        Bottom,
-        Left,
-        Right
+        TopEdge,
+        BottomEdge,
+        LeftEdge,
+        RightEdge
     }
 
     required property Item target
@@ -45,7 +49,7 @@ Item {
 
     // Distance travelled. 0 disables it.
     property real slide: 0
-    property int from: Appear.Bottom
+    property int from: Appear.BottomEdge
 
     // Degrees to rotate through. 0 disables it.
     property real spin: 0
@@ -63,9 +67,9 @@ Item {
     readonly property real _dx: {
         if (slide === 0)
             return 0;
-        if (from === Appear.Left)
+        if (from === Appear.LeftEdge)
             return -slide;
-        if (from === Appear.Right)
+        if (from === Appear.RightEdge)
             return slide;
         return 0;
     }
@@ -73,9 +77,9 @@ Item {
     readonly property real _dy: {
         if (slide === 0)
             return 0;
-        if (from === Appear.Top)
+        if (from === Appear.TopEdge)
             return -slide;
-        if (from === Appear.Bottom)
+        if (from === Appear.BottomEdge)
             return slide;
         return 0;
     }

@@ -6,7 +6,7 @@ import QtQuick
 // drawers, on-screen displays. Bind `shown` and set `edge`.
 //
 //     SlideIn {
-//         edge: SlideIn.Top
+//         edge: SlideIn.TopEdge
 //         shown: visible
 //         Rectangle { ... }
 //     }
@@ -18,28 +18,32 @@ import QtQuick
 Item {
     id: root
 
+    // Spelled with the Edge suffix because Item already defines Top,
+    // Bottom, Left and Right as transform origins, and a base type's enum
+    // shadows one declared here — the plain names never reach this
+    // declaration at all.
     enum Edge {
-        Top,
-        Bottom,
-        Left,
-        Right
+        TopEdge,
+        BottomEdge,
+        LeftEdge,
+        RightEdge
     }
 
     default property alias content: holder.data
 
-    property int edge: SlideIn.Top
+    property int edge: SlideIn.TopEdge
     property bool shown: true
 
     // How far outside its own bounds the panel starts. Defaults to its own
     // size, so it begins fully off the edge.
-    property real distance: (edge === SlideIn.Top || edge === SlideIn.Bottom) ? height : width
+    property real distance: (edge === SlideIn.TopEdge || edge === SlideIn.BottomEdge) ? height : width
 
     readonly property real _dx: {
         if (shown)
             return 0;
-        if (edge === SlideIn.Left)
+        if (edge === SlideIn.LeftEdge)
             return -distance;
-        if (edge === SlideIn.Right)
+        if (edge === SlideIn.RightEdge)
             return distance;
         return 0;
     }
@@ -47,9 +51,9 @@ Item {
     readonly property real _dy: {
         if (shown)
             return 0;
-        if (edge === SlideIn.Top)
+        if (edge === SlideIn.TopEdge)
             return -distance;
-        if (edge === SlideIn.Bottom)
+        if (edge === SlideIn.BottomEdge)
             return distance;
         return 0;
     }
