@@ -311,6 +311,9 @@ Motion.scale = animationsEnabled ? 1 : 0
 | `Stagger` | delays for cascading entries |
 | `MotionShape` | a drawn shape, optionally resolving to a circle |
 | `Genie` | a surface poured into a point, the macOS way |
+| `Ripple` | a press spreading from where it landed, masked to the shape |
+| `FadeThrough` | swapping unrelated content without ever compositing both |
+| `SharedAxis` | swapping related content, where the direction means something |
 | `ColourCycle` | a colour that keeps moving: a rainbow, or a lap round a palette |
 | `EdgeLight` | light travelling along an edge |
 
@@ -338,6 +341,16 @@ scalloped circle — so adding another is a line rather than a file. With
 The swap is instantaneous on purpose: masked by whatever size change is
 running it reads as the shape resolving, while morphing between paths of
 different vertex counts costs a great deal and looks worse.
+
+`FadeThrough` is not a crossfade, and that is the point: a crossfade shows
+a blend of both for half its length, legible as neither. It clears the old
+out first and only then brings the new in. `SharedAxis` is for content that
+is a step forward or back in one flow, where reversing the direction is
+what tells someone the Back they pressed was heard.
+
+`Ripple` masks itself to a rounded rectangle rather than clipping. Qt's
+clipping is rectangular whatever the shape underneath, so a ripple in a
+rounded control squares its corners off on the frame the wave reaches them.
 
 `Blink` and `Spin` are loops, not transitions, and are timed differently on
 purpose. A transition's duration is how long its curve needs to settle, so
