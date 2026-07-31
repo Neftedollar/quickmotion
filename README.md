@@ -15,7 +15,10 @@ Behavior on scale { Anim { role: Motion.Reveal } }
 Behavior on color { ColourAnim {} }
 ```
 
-- Zero dependencies beyond `QtQuick`. No shell, no config, no palette.
+- Zero dependencies beyond `QtQuick` — no shell, no config, no palette.
+  Nothing here imports Quickshell, and everything including `Genie` runs
+  under Qt's own `qml` runtime. `MotionShape` additionally needs
+  `QtQuick.Shapes`, which ships in the same package.
 - Roles are named for what is happening, not for which curve is used, so
   the call site survives the specification changing its numbers.
 - `Motion.scale = 0` disables animation outright, which is what
@@ -205,6 +208,8 @@ Motion.scale = animationsEnabled ? 1 : 0
 | `AnimatedRow` | a row whose items animate in, out, and out of each other's way |
 | `AnimatedStack` | content replacing content, overlapping rather than cutting |
 | `Shake` | refusal feedback |
+| `Blink` | a steady pulse: a caret, a recording dot |
+| `Spin` | continuous rotation for a busy indicator |
 | `Pressable` | a control that acknowledges a touch and settles when released |
 | `Reveal` | a container that grows and shrinks with its content |
 | `SlideIn` | a panel arriving from an edge |
@@ -234,6 +239,19 @@ scalloped circle — so adding another is a line rather than a file. With
 The swap is instantaneous on purpose: masked by whatever size change is
 running it reads as the shape resolving, while morphing between paths of
 different vertex counts costs a great deal and looks worse.
+
+`Blink` and `Spin` are loops, not transitions, and are timed differently on
+purpose. A transition's duration is how long its curve needs to settle, so
+the two travel together; a loop's duration is a rhythm, chosen by how often
+it should read. Decoupling them is safe only because effect curves do not
+overshoot — a spatial curve stretched over a rhythm would sit visibly
+overshot at both ends of every cycle.
+
+`Spin` ignores `Motion.scale`, deliberately. A spinner is the only thing
+saying the work is still running, and reduced motion means "no transitions",
+not "no progress indication". A scale of 0 would in any case not stop the
+spinner: a zero-duration animation looping forever spins the event loop
+instead, at whatever rate the CPU allows.
 
 `AnimatedRow` takes a `jitter` from 0 to 1: each item arrives a little
 larger or smaller, a beat sooner or later. Identical items animating

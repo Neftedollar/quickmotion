@@ -57,7 +57,10 @@ Item {
     property int enterRole: Motion.Reveal
     property int exitRole: Motion.Dismiss
 
-    // Delay before entering. Stagger feeds this.
+    // Delay before entering, in real milliseconds. Stagger feeds this and
+    // has already applied Motion.scale, so this must not apply it again —
+    // scaling twice squares the multiplier and a half-speed cascade comes
+    // out at a quarter.
     property int delay: 0
 
     signal finished
@@ -126,7 +129,7 @@ Item {
         id: anim
 
         PauseAnimation {
-            duration: root.shown ? Motion.ms(root.delay) : 0
+            duration: root.shown ? root.delay : 0
         }
 
         ParallelAnimation {

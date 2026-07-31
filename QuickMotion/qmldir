@@ -11,6 +11,8 @@ AnimatedStack 1.0 AnimatedStack.qml
 Genie 1.0 Genie.qml
 MotionShape 1.0 MotionShape.qml
 Shake 1.0 Shake.qml
+Blink 1.0 Blink.qml
+Spin 1.0 Spin.qml
 Pressable 1.0 Pressable.qml
 Stagger 1.0 Stagger.qml
 Reveal 1.0 Reveal.qml
