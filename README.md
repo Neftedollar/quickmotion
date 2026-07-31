@@ -124,6 +124,42 @@ arrive, and animates only as they leave. A viewport still animating open
 does not contain the item just appended, so the add transition is skipped
 for it and the item snaps into place while everything around it moves.
 
+## Composing
+
+One component covers entry and exit, and the effects stack:
+
+```qml
+Appear {
+    target: card
+    shown: expanded     // bind it; nothing else to call
+    scale: 0.96
+    slide: 16
+    from: Appear.Bottom
+}
+```
+
+Everything past the fade is off until given a value, so a plain fade stays
+one line and a full entrance stays readable. The effects run together on
+one curve, which is what makes a combination read as a single movement
+rather than three overlapping ones.
+
+Entry and exit take different roles by default. Something arriving is worth
+watching; something leaving should get out of the way. Set `exitRole` to
+`enterRole` if you disagree.
+
+## Reduced motion
+
+`Motion.scale` multiplies every duration, and 0 disables animation
+outright. It is left for the caller to set rather than detected here,
+because reading a desktop setting means running a process or talking to a
+portal, and this library depends on nothing but QtQuick — which is what
+lets it be dropped into anything.
+
+```qml
+// GNOME
+Motion.scale = animationsEnabled ? 1 : 0
+```
+
 ## Components
 
 | | |
