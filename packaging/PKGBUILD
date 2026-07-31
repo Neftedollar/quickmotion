@@ -1,0 +1,22 @@
+# Maintainer: Neftedollar <oildollar@gmail.com>
+
+pkgname=quickmotion
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Material 3 Expressive motion for QML — roles instead of loose curves, for Quickshell and any Qt app"
+arch=('any')
+url="https://github.com/Neftedollar/quickmotion"
+license=('MIT')
+depends=('qt6-declarative')
+# Shaders ship compiled, so this is only needed to rebuild them against the
+# Qt being packaged against — which is what a distribution package wants.
+makedepends=('qt6-shadertools')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+package() {
+    cd "$srcdir/$pkgname-$pkgver"
+    DESTDIR="$pkgdir" PREFIX=/usr ./install.sh
+    install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+    install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+}

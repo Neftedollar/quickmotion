@@ -1,6 +1,10 @@
 # QuickMotion
 
-Material 3 Expressive motion for QML, as a drop-in module.
+Material 3 Expressive motion for QML, as a drop-in module. Three motion
+languages, a set of roles instead of loose curves, and the effects that
+need a shader.
+
+<p align="center"><img src="docs/edge.gif" alt="EdgeLight travelling round three shapes of different proportions" width="640"></p>
 
 A curve and its duration are one value, not two knobs. Spatial curves
 overshoot and need room to settle; effect curves do not, and look sluggish
@@ -27,12 +31,52 @@ Behavior on color { ColourAnim {} }
 ## Install
 
 ```sh
+git clone https://github.com/Neftedollar/quickmotion
+cd quickmotion
 sudo ./install.sh
 ```
 
 Goes into Qt's QML import path, so `import QuickMotion` just works —
 including from Quickshell configs, which read that path like any Qt
-program. `DESTDIR`, `PREFIX` and `QMLDIR` are honoured for packaging.
+program.
+
+Without root, into your home instead:
+
+```sh
+./install.sh --user
+```
+
+Qt does not search the user path on its own, so that one prints the single
+line you need to add to your environment. `DESTDIR`, `PREFIX` and `QMLDIR`
+are honoured for packaging, and `packaging/PKGBUILD` builds an Arch package.
+
+Shaders are committed already compiled, so `qt6-shadertools` is optional.
+When it is present the installer rebuilds them against your own Qt rather
+than making you inherit whichever version they were baked with.
+
+## Quickstart
+
+Drop it into any Quickshell config — a bar item that acknowledges a click,
+grows with its content and slides in from the top:
+
+```qml
+import QtQuick
+import QuickMotion
+
+Pressable {
+    Reveal {
+        open: expanded
+        Text { text: "now with a settle" }
+    }
+
+    Behavior on x { Anim { role: Motion.Reveal } }
+    Behavior on color { ColourAnim {} }
+}
+```
+
+Nothing needs configuring first. `Motion` is a singleton with defaults, and
+every component works out of the box; the rest of this file is about when to
+reach for which.
 
 ## Profiles
 
@@ -151,6 +195,8 @@ watching; something leaving should get out of the way. Set `exitRole` to
 `enterRole` if you disagree.
 
 ## Genie
+
+<p align="center"><img src="docs/genie.gif" alt="A window pouring into each of the four edges in turn" width="640"></p>
 
 The macOS minimise, where a window pours into a point on the dock.
 
@@ -284,6 +330,8 @@ nothing at all, silently.
 worth watching and decelerates into place; something leaving should get out
 of the way. One curve for both makes dismissal feel reluctant.
 
+<p align="center"><img src="docs/shapes.gif" alt="Ten drawn shapes turning, colours walking the hue circle" width="640"></p>
+
 `MotionShape` draws ten shapes from two formulas — a rounded polygon and a
 scalloped circle — so adding another is a line rather than a file. With
 `settlesToCircle` it starts as its shape and becomes a dot shortly after.
@@ -311,6 +359,10 @@ rather than random, so a rebuilt item does not jump to a different one
 mid-animation.
 
 ## Demo
+
+Every animation in this file was recorded from these, frame by frame rather
+than off the screen — `tools/record.sh` drives each scene as a function of
+one parameter and grabs a frame per step, so the loops close cleanly.
 
 ```sh
 QML_IMPORT_PATH=. qs -p demo/gallery.qml   # everything at once
