@@ -6,6 +6,7 @@ NumberAnim 1.0 NumberAnim.qml
 ColourAnim 1.0 ColourAnim.qml
 
 AnimatedRow 1.0 AnimatedRow.qml
+AnimatedStack 1.0 AnimatedStack.qml
 MotionShape 1.0 MotionShape.qml
 Shake 1.0 Shake.qml
 Pressable 1.0 Pressable.qml
