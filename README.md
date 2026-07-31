@@ -106,6 +106,7 @@ for it and the item snaps into place while everything around it moves.
 | `Reveal` | a container that grows and shrinks with its content |
 | `SlideIn` | a panel arriving from an edge |
 | `Stagger` | delays for cascading entries |
+| `MotionShape` | a drawn shape, optionally resolving to a circle |
 
 `Shake` defaults to animating the anchor offset rather than `x`, because an
 item centred with anchors ignores `x` entirely — animating it there does
@@ -114,6 +115,13 @@ nothing at all, silently.
 `SlideIn` uses different curves entering and leaving. Something arriving is
 worth watching and decelerates into place; something leaving should get out
 of the way. One curve for both makes dismissal feel reluctant.
+
+`MotionShape` draws ten shapes from two formulas — a rounded polygon and a
+scalloped circle — so adding another is a line rather than a file. With
+`settlesToCircle` it starts as its shape and becomes a dot shortly after.
+The swap is instantaneous on purpose: masked by whatever size change is
+running it reads as the shape resolving, while morphing between paths of
+different vertex counts costs a great deal and looks worse.
 
 `AnimatedRow` takes a `jitter` from 0 to 1: each item arrives a little
 larger or smaller, a beat sooner or later. Identical items animating
