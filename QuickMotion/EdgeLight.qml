@@ -73,9 +73,21 @@ Item {
 
     property bool running: true
 
-    // Exposed so several lights can be given different phases. Two on the
-    // same card look wrong sharing one and right half a lap apart.
     property real progress: 0
+
+    // Offset into the lap, 0 to 1. `count` repeats one colour; several
+    // colours means several of these stacked, and then they need pulling
+    // apart or they ride on top of each other. Same period, different
+    // phase, and they hold their spacing for as long as they run:
+    //
+    //     EdgeLight { lightColour: "#8ab4f8" }
+    //     EdgeLight { lightColour: "#ff6159"; phase: 1 / 3 }
+    //     EdgeLight { lightColour: "#28c941"; phase: 2 / 3 }
+    //
+    // Stacking is the answer rather than a list of colours per light: each
+    // one then gets its own tail, glow and thickness too, and where they
+    // overlap the colours mix rather than one winning.
+    property real phase: 0
 
     // Linear: a lap has no beginning to ease out of and no end to ease
     // into, and any curve puts a hesitation at the seam.
@@ -113,7 +125,8 @@ Item {
         readonly property real tail: root.tail
         readonly property real count: root.count
         readonly property real glow: root.glow
-        readonly property real progress: root.progress
+        // Wrapped in the shader, so a phase past the end of the lap is fine.
+        readonly property real progress: root.progress + root.phase
 
         // Resolved against this file rather than the root document — see
         // Genie for what a bare relative path does instead.

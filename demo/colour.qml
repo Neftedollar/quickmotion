@@ -116,6 +116,61 @@ ShellRoot {
                 }
             }
 
+            // ── three colours on one outline ──
+            //
+            // `count` repeats a single colour, so several colours means
+            // several lights stacked and pulled apart by phase.
+            Item {
+                width: 480
+                height: 96
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                Rectangle {
+                    id: strip
+
+                    anchors.fill: parent
+                    radius: 24
+                    color: "#161d26"
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: "three lights, three phases"
+                        color: "#7e8894"
+                        font.pixelSize: 13
+                    }
+                }
+
+                Repeater {
+                    model: [
+                        {
+                            c: "#8ab4f8",
+                            p: 0.0
+                        },
+                        {
+                            c: "#ff6159",
+                            p: 1 / 3
+                        },
+                        {
+                            c: "#28c941",
+                            p: 2 / 3
+                        }
+                    ]
+
+                    EdgeLight {
+                        required property var modelData
+
+                        anchors.fill: strip
+                        rounding: strip.radius
+                        lightColour: modelData.c
+                        thickness: 2.5
+                        glow: 11
+                        tail: 0.2
+                        phase: modelData.p
+                        period: Motion.ms(4200)
+                    }
+                }
+            }
+
             // ── the cycles themselves, unadorned ──
             Row {
                 anchors.horizontalCenter: parent.horizontalCenter

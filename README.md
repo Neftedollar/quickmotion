@@ -215,6 +215,19 @@ geometry and the same corner radius. `count` puts several lights evenly
 around the lap and `tail` sets their length as a fraction of the gap
 between them, so they stay proportionate as the count changes.
 
+`count` repeats one colour — there is a single colour in the shader.
+Several colours means several lights stacked and pulled apart by `phase`:
+
+```qml
+EdgeLight { anchors.fill: card; rounding: card.radius; lightColour: "#8ab4f8" }
+EdgeLight { anchors.fill: card; rounding: card.radius; lightColour: "#ff6159"; phase: 1 / 3 }
+EdgeLight { anchors.fill: card; rounding: card.radius; lightColour: "#28c941"; phase: 2 / 3 }
+```
+
+Stacking rather than a list of colours per light: each then gets its own
+tail, glow and thickness too, and where they overlap the colours mix
+instead of one winning.
+
 `ColourCycle` produces a colour and nothing else — no rectangle, no
 gradient, no opinion about what is painted. With `colours` empty it walks
 the hue circle; given a list it walks that, blending each into the next and
