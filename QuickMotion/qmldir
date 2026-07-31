@@ -1,0 +1,6 @@
+module QuickMotion
+singleton Motion 1.0 Motion.qml
+Anim 1.0 Anim.qml
+NumberAnim 1.0 NumberAnim.qml
+ColourAnim 1.0 ColourAnim.qml
+AnimatedRow 1.0 AnimatedRow.qml

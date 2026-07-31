@@ -1,0 +1,98 @@
+# QuickMotion
+
+Material 3 Expressive motion for QML, as a drop-in module.
+
+A curve and its duration are one value, not two knobs. Spatial curves
+overshoot and need room to settle; effect curves do not, and look sluggish
+given that room. Picking each independently is how motion ends up feeling
+wrong in a way nobody can point at — and it is what happens by default,
+because QML makes you write them separately every time.
+
+```qml
+import QuickMotion
+
+Behavior on scale { Anim { role: Motion.Reveal } }
+Behavior on color { ColourAnim {} }
+```
+
+- Zero dependencies beyond `QtQuick`. No shell, no config, no palette.
+- Roles are named for what is happening, not for which curve is used, so
+  the call site survives the specification changing its numbers.
+- `Motion.scale = 0` disables animation outright, which is what
+  accessibility settings and remote sessions need.
+
+## Install
+
+```sh
+sudo ./install.sh
+```
+
+Goes into Qt's QML import path, so `import QuickMotion` just works —
+including from Quickshell configs, which read that path like any Qt
+program. `DESTDIR`, `PREFIX` and `QMLDIR` are honoured for packaging.
+
+## Roles
+
+| Role | For |
+|---|---|
+| `Motion.Press` | a control acknowledging a touch |
+| `Motion.Release` | the same control letting go |
+| `Motion.Reveal` | something arriving on screen |
+| `Motion.Dismiss` | something leaving |
+| `Motion.Resize` | a container following its content |
+| `Motion.Emphasis` | drawing attention deliberately |
+| `Motion.Fade` | opacity only |
+| `Motion.Tint` | colour only |
+
+Press is deliberately quicker than release. Acknowledging a touch has to
+feel instant; letting go should settle. Symmetric timing reads as lag on
+the way in and haste on the way out.
+
+The underlying curves and durations remain available as `Motion.curve.*`
+and `Motion.dur.*` for cases a role does not cover.
+
+## AnimatedRow
+
+A horizontal row whose items animate in, out, and out of each other's way.
+
+This exists because `Repeater` cannot do it. A Repeater destroys its
+delegate the instant the model shrinks, so a removed item has nothing left
+to animate and simply blinks out — however carefully its entry was
+animated. `ListView` keeps the delegate alive for the length of its
+`remove` transition, which is the whole trick.
+
+```qml
+AnimatedRow {
+    model: items       // must be a real model, see below
+    itemWidth: 9
+    gap: 7
+    travel: 6
+    delegate: Rectangle { width: 9; height: 9; radius: 4.5 }
+}
+```
+
+Two things will catch you, both silent:
+
+**The model must emit insert and remove signals.** A plain integer model
+lays out correctly and updates on every change, so it looks right — but
+QML rebuilds the view rather than reporting insertions, the transitions
+never run, and items appear and vanish instantly. There is no warning
+anywhere. Use a `ListModel`.
+
+**`itemWidth` is needed whenever items are uniform.** A `ListView` only
+builds delegates inside its viewport, so binding width to `contentWidth`
+closes a loop: no width, no delegates, no content, no width, nothing
+drawn. Given `itemWidth` the row computes its width from the count instead.
+
+## Demo
+
+```sh
+QML_IMPORT_PATH=. qs -p demo/dots.qml
+```
+
+A row that fills and empties itself, which is the only way to actually see
+an exit animation.
+
+## Licence
+
+MIT. See [LICENSE](LICENSE).
