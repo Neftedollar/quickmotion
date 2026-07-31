@@ -31,6 +31,35 @@ Goes into Qt's QML import path, so `import QuickMotion` just works —
 including from Quickshell configs, which read that path like any Qt
 program. `DESTDIR`, `PREFIX` and `QMLDIR` are honoured for packaging.
 
+## Profiles
+
+Three motion languages, one set of roles:
+
+```qml
+Motion.profile = Motion.Adwaita
+```
+
+| | character | Reveal |
+|---|---|---|
+| `Motion.Material` | overshoots, holds, settles — announces itself | 500ms |
+| `Motion.Cupertino` | spring-driven, one soft bounce, tight damping | 550ms |
+| `Motion.Adwaita` | critically damped, no overshoot anywhere, quiet | 250ms |
+
+They differ in kind, not in degree. Adwaita is half Material's duration and
+never overshoots, because libadwaita treats animation as feedback rather
+than as expression. Cupertino is slower than Material but softer, with the
+single overshoot a spring gives rather than the two-beat arrival Material
+asks for.
+
+Approximations, and honestly so: Cupertino and Adwaita are both spring-based
+at source, and a cubic bezier cannot express more than one oscillation. For
+a single soft bounce it is indistinguishable; for anything springier, Qt's
+`SpringAnimation` is the right tool instead.
+
+`Motion.curveIn(profile, role)` and `Motion.durationIn(profile, role)` query
+a profile without switching the active one — assigning to `profile` inside
+a binding to compare them is a loop.
+
 ## Roles
 
 | Role | For |
