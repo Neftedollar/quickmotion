@@ -16,6 +16,24 @@ here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 DESTDIR="${DESTDIR:-}"
 PREFIX="${PREFIX:-/usr}"
 
+# Qt's QML import path differs per distribution — /usr/lib/qt6/qml on Arch,
+# /usr/lib64/qt6/qml on Fedora, /usr/lib/x86_64-linux-gnu/qt6/qml on Debian.
+# Hardcoding one of them means the install reports success and the import
+# fails, with nothing connecting the two. Ask Qt instead.
+qt_qmldir() {
+    local q
+    for q in qmake6 qtpaths6 "$PREFIX/lib/qt6/bin/qmake6" /usr/lib/qt6/bin/qmake6; do
+        if command -v "$q" >/dev/null 2>&1; then
+            case "$q" in
+                *qtpaths6) "$q" --query QT_INSTALL_QML 2>/dev/null && return ;;
+                *) "$q" -query QT_INSTALL_QML 2>/dev/null && return ;;
+            esac
+        fi
+    done
+    echo "$PREFIX/lib/qt6/qml"
+}
+
+
 mode=install
 user_install=0
 
@@ -35,10 +53,16 @@ done
 if [ "$user_install" = 1 ]; then
     QMLDIR="${QMLDIR:-${XDG_DATA_HOME:-$HOME/.local/share}/qt6/qml}"
 else
-    QMLDIR="${QMLDIR:-$PREFIX/lib/qt6/qml}"
+    QMLDIR="${QMLDIR:-$(qt_qmldir)}"
 fi
 
 TARGET="$DESTDIR$QMLDIR/QuickMotion"
+
+if [ -z "$DESTDIR" ] && [ "$user_install" = 0 ] && [ "$(id -u)" -ne 0 ]; then
+    echo "needs root for a system install: sudo $0 $*" >&2
+    echo "or install for yourself alone:   $0 --user" >&2
+    exit 1
+fi
 
 if [ "$mode" = uninstall ]; then
     rm -rf "$TARGET"
@@ -46,11 +70,6 @@ if [ "$mode" = uninstall ]; then
     exit 0
 fi
 
-if [ -z "$DESTDIR" ] && [ "$user_install" = 0 ] && [ "$(id -u)" -ne 0 ]; then
-    echo "needs root for a system install: sudo $0 $*" >&2
-    echo "or install for yourself alone:   $0 --user" >&2
-    exit 1
-fi
 
 install -d "$TARGET"
 install -m 0644 "$here"/QuickMotion/*.qml "$here"/QuickMotion/qmldir "$TARGET/"
@@ -81,8 +100,15 @@ if [ -n "$qsb" ]; then
     rebuilt=0
     for src in "$here"/QuickMotion/shaders/*.vert "$here"/QuickMotion/shaders/*.frag; do
         [ -e "$src" ] || continue
-        "$qsb" --qt6 -o "$TARGET/shaders/$(basename "$src").qsb" "$src"
-        rebuilt=$((rebuilt + 1))
+        # Tested rather than left to set -e. This step is optional: a qsb
+        # that is present but fails leaves the committed blobs already in
+        # place, and aborting here would fail the whole install — and any
+        # package build — over an optional improvement.
+        if "$qsb" --qt6 -o "$TARGET/shaders/$(basename "$src").qsb" "$src"; then
+            rebuilt=$((rebuilt + 1))
+        else
+            echo "  warning: could not rebuild $(basename "$src"), keeping the committed blob" >&2
+        fi
     done
     echo "rebuilt $rebuilt shaders with $qsb"
 else
