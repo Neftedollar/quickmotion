@@ -160,11 +160,11 @@ Item {
             if (i === 0) {
                 d += `M ${x} ${y} `;
             } else {
-                // Sweep alternates so lobes bulge outwards and the joins
-                // between them cut back in.
-                const sweep = i % 2 === 0 ? 1 : 1;
+                // One sweep direction throughout. An earlier version
+                // alternated it, and the comment describing that survived
+                // the code: both branches of the conditional returned 1.
                 const ar = (r - ri) / 2 + ri * 0.35;
-                d += `A ${ar} ${ar} 0 0 ${sweep} ${x} ${y} `;
+                d += `A ${ar} ${ar} 0 0 1 ${x} ${y} `;
             }
         }
         return d + "Z";

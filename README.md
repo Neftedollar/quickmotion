@@ -19,6 +19,10 @@ Behavior on scale { Anim { role: Motion.Reveal } }
 Behavior on color { ColourAnim {} }
 ```
 
+- Qt 6.6 or newer (`MotionShape` uses `Shape.CurveRenderer`). The shipped
+  `.qsb` shaders are baked for Qt 6.8 and above; on anything older,
+  `qt6-shadertools` is **required**, not optional, and the installer will
+  rebuild them.
 - Zero dependencies beyond `QtQuick` — no shell, no config, no palette.
   Nothing here imports Quickshell, and everything including `Genie` runs
   under Qt's own `qml` runtime. `MotionShape` additionally needs
@@ -124,8 +128,12 @@ Press is deliberately quicker than release. Acknowledging a touch has to
 feel instant; letting go should settle. Symmetric timing reads as lag on
 the way in and haste on the way out.
 
-The underlying curves and durations remain available as `Motion.curve.*`
-and `Motion.dur.*` for cases a role does not cover.
+`Motion.curve.*` and `Motion.dur.*` hold **Material's** values and do not
+follow the active profile — Cupertino's and Adwaita's live at
+`Motion.cupertino.*` and `Motion.adwaita.*`, and their durations are
+reachable only through `durationIn()`. Reach for a role first; these are
+for the cases no role covers, and pairing one of them with a
+profile-aware duration is the exact mistake the roles exist to prevent.
 
 ## AnimatedRow
 
@@ -230,8 +238,11 @@ small for a tight spout that whips through, large for a lazy stretch closer
 to a fold. Below about 0.15 the mesh is too coarse to bend smoothly and the
 neck goes faceted.
 
-The shaders are compiled at install time and shipped ready, so consumers
-need `qt6-shadertools` only to rebuild them.
+Shaders ship compiled and are rebuilt at install time when `qsb` is
+present. The committed blobs are baked by Qt 6.11 and a `.qsb` is refused
+by any Qt older than the one that baked it — so on Qt below 6.8 the
+rebuild is what makes them load at all, and without it `Genie`, `EdgeLight`
+and `Ripple` draw nothing.
 
 ## Light along an edge
 
@@ -310,6 +321,8 @@ Motion.scale = animationsEnabled ? 1 : 0
 | `SlideIn` | a panel arriving from an edge |
 | `Stagger` | delays for cascading entries |
 | `MotionShape` | a drawn shape, optionally resolving to a circle |
+| `Appear` | entry and exit composed from fade, scale, slide and spin |
+| `NumberAnim` | `Anim` under its unambiguous name |
 | `Genie` | a surface poured into a point, the macOS way |
 | `Ripple` | a press spreading from where it landed, masked to the shape |
 | `FadeThrough` | swapping unrelated content without ever compositing both |

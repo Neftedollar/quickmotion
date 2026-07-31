@@ -38,10 +38,15 @@ QtObject {
     // one oscillation. For a single soft bounce it is indistinguishable;
     // for anything springier it is not, and Qt's SpringAnimation is the
     // right tool instead.
+    // Numbered away from Role deliberately. Both enums are flattened onto
+    // this singleton, so with the default numbering Motion.Material and
+    // Motion.Press were both 0 — `profile = Motion.Reveal` silently selected
+    // Adwaita and `role: Motion.Cupertino` silently meant Release, with no
+    // warning at any layer.
     enum Profile {
-        Material,   // Material 3 Expressive
-        Cupertino,  // Apple, spring-flavoured
-        Adwaita     // GNOME / libadwaita
+        Material = 100,   // Material 3 Expressive
+        Cupertino = 101,  // Apple, spring-flavoured
+        Adwaita = 102     // GNOME / libadwaita
     }
 
     property int profile: Motion.Material

@@ -132,9 +132,9 @@ ListView {
                     property: "scale"
                     from: root.fromScale
                     to: root.arriveScale + root._vary(root.count, 0.25)
-                    duration: Motion.dur.fastSpatial
+                    duration: Motion.durationFor(Motion.Resize)
                     easing.type: Easing.BezierSpline
-                    easing.bezierCurve: Motion.curve.fastSpatial
+                    easing.bezierCurve: Motion.curveFor(Motion.Resize)
                 }
                 NumberAnimation {
                     property: "x"
@@ -159,9 +159,9 @@ ListView {
             NumberAnimation {
                 property: "scale"
                 to: 1
-                duration: Motion.dur.emphasizedDecel
+                duration: Motion.durationFor(Motion.Release)
                 easing.type: Easing.BezierSpline
-                easing.bezierCurve: Motion.curve.emphasizedDecel
+                easing.bezierCurve: Motion.curveFor(Motion.Release)
             }
         }
     }

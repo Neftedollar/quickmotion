@@ -132,29 +132,31 @@ Item {
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-    // Emphasised deceleration: quick away from the finger, slowing as it
-    // reaches the edges. Linear looks mechanical; accelerating looks like it
-    // is falling over.
-    NumberAnimation {
+    // Decelerating: quick away from the finger, slowing as it reaches the
+    // edges. Linear looks mechanical; accelerating looks like it is falling
+    // over.
+    //
+    // Taken from the Release role rather than named directly. An earlier
+    // version paired Material's emphasizedDecel with the active profile's
+    // duration, which under Cupertino or Adwaita is a curve and a duration
+    // designed against each other by nobody — the exact fault this library
+    // exists to make unwriteable, committed in the library itself.
+    Anim {
         id: grow
 
         target: wave
         property: "waveRadius"
         from: 0
         to: root._maxRadius
-        duration: Motion.durationFor(Motion.Reveal)
-        easing.type: Easing.BezierSpline
-        easing.bezierCurve: Motion.curve.emphasizedDecel
+        role: Motion.Release
     }
 
-    NumberAnimation {
+    Anim {
         id: fade
 
         target: wave
         property: "waveOpacity"
         to: 0
-        duration: Motion.durationFor(Motion.Fade)
-        easing.type: Easing.BezierSpline
-        easing.bezierCurve: Motion.curveFor(Motion.Fade)
+        role: Motion.Fade
     }
 }

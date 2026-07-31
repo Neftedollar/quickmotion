@@ -74,9 +74,12 @@ ShaderEffect {
 
     property bool minimized: false
 
-    // Genie is deliberately not run off a Motion role. The spatial roles
-    // overshoot, and progress above 1 is clamped in the shader — the effect
-    // would finish early and then sit still for the rest of the animation.
+    // The one place here that is deliberately not profile-aware, stated
+    // rather than left to be discovered. Every spatial curve overshoots,
+    // progress above 1 is clamped in the shader, and the pour would finish
+    // early and then sit still for the rest of its duration — so both the
+    // timing and the curve are fixed, and the curve is Material's whatever
+    // profile is active.
     property int duration: Motion.ms(520)
     property var easing: Motion.curve.standard
 

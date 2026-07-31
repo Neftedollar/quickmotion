@@ -133,47 +133,45 @@ Item {
         }
 
         ParallelAnimation {
-            // A zero duration leaves the property untouched, which is how
-            // a disabled effect stays disabled without the caller needing
-            // to know it is declared at all.
+            // A disabled effect is given no target at all. A zero duration
+            // does not leave the property untouched — it writes `to`
+            // instantly, so `fade: false` meant "snap opacity" rather than
+            // "leave opacity alone", and the default `slide: 0` yanked the
+            // target back to wherever it sat at startup on every toggle.
+            // Verified by measurement, not assumed.
             Anim {
-                target: root.target
+                target: root.fade ? root.target : null
                 property: "opacity"
                 to: root.shown ? 1 : 0
                 role: Motion.Fade
-                duration: root.fade ? Motion.durationFor(Motion.Fade) : 0
             }
 
             Anim {
-                target: root.target
+                target: root.scale !== 1 ? root.target : null
                 property: "scale"
                 to: root.shown ? 1 : root.scale
                 role: root._role
-                duration: root.scale !== 1 ? Motion.durationFor(root._role) : 0
             }
 
             Anim {
-                target: root.target
+                target: root._dx !== 0 ? root.target : null
                 property: "x"
                 to: root._baseX + (root.shown ? 0 : root._dx)
                 role: root._role
-                duration: root._dx !== 0 ? Motion.durationFor(root._role) : 0
             }
 
             Anim {
-                target: root.target
+                target: root._dy !== 0 ? root.target : null
                 property: "y"
                 to: root._baseY + (root.shown ? 0 : root._dy)
                 role: root._role
-                duration: root._dy !== 0 ? Motion.durationFor(root._role) : 0
             }
 
             Anim {
-                target: root.target
+                target: root.spin !== 0 ? root.target : null
                 property: "rotation"
                 to: root.shown ? 0 : root.spin
                 role: root._role
-                duration: root.spin !== 0 ? Motion.durationFor(root._role) : 0
             }
         }
 
