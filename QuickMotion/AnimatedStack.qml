@@ -51,17 +51,26 @@ Item {
         enter.restart();
     }
 
+        // Sized rather than anchored, and this is not a style choice.
+        // QQuickAnchors owns x and y under `fill` or `centerIn`, so a
+        // binding or animation on either is overwritten every layout pass —
+        // silently, from the first frame. This component's whole purpose is
+        // to move something, and anchored it moved exactly zero pixels.
+    //
+    // Centring is therefore done by hand. `y` is a plain binding because
+    // nothing animates it; `x` gets only its resting value, so the
+    // animations below are free to drive it.
     Loader {
         id: outgoing
 
-        anchors.centerIn: parent
+        y: (root.height - height) / 2
         opacity: 0
     }
 
     Loader {
         id: current
 
-        anchors.centerIn: parent
+        y: (root.height - height) / 2
     }
 
     ParallelAnimation {

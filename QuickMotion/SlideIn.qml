@@ -61,7 +61,13 @@ Item {
     Item {
         id: holder
 
-        anchors.fill: parent
+        // Sized rather than anchored, and this is not a style choice.
+        // QQuickAnchors owns x and y under `fill` or `centerIn`, so a
+        // binding or animation on either is overwritten every layout pass —
+        // silently, from the first frame. This component's whole purpose is
+        // to move something, and anchored it moved exactly zero pixels.
+        width: root.width
+        height: root.height
 
         x: root._dx
         y: root._dy

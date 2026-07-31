@@ -71,7 +71,13 @@ Item {
     Loader {
         id: loader
 
-        anchors.fill: parent
+        // Sized rather than anchored, and this is not a style choice.
+        // QQuickAnchors owns x and y under `fill` or `centerIn`, so a
+        // binding or animation on either is overwritten every layout pass —
+        // silently, from the first frame. This component's whole purpose is
+        // to move something, and anchored it moved exactly zero pixels.
+        width: root.width
+        height: root.height
         sourceComponent: root._shown >= 0 && root._shown < root.pages.length ? root.pages[root._shown] : null
         transformOrigin: Item.Center
     }
