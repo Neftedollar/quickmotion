@@ -101,6 +101,7 @@ for it and the item snaps into place while everything around it moves.
 |---|---|
 | `Anim`, `ColourAnim` | animations that take a role instead of a curve and a duration |
 | `AnimatedRow` | a row whose items animate in, out, and out of each other's way |
+| `AnimatedStack` | content replacing content, overlapping rather than cutting |
 | `Shake` | refusal feedback |
 | `Pressable` | a control that acknowledges a touch and settles when released |
 | `Reveal` | a container that grows and shrinks with its content |
