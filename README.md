@@ -71,6 +71,12 @@ AnimatedRow {
 }
 ```
 
+Entry is two beats, not one: the item arrives half again its resting size,
+holds, and settles. A single beat — appear at final size and stop — is what
+makes an otherwise correct animation feel flat, and no amount of curve
+tuning fixes it, because the missing thing is the pause between two events
+rather than the shape of one. `arriveScale: 1` restores the single beat.
+
 Two things will catch you, both silent:
 
 **The model must emit insert and remove signals.** A plain integer model

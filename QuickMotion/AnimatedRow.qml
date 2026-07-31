@@ -32,6 +32,19 @@ ListView {
     // Scale an item grows from and shrinks to. Zero reads as a pop.
     property real fromScale: 0
 
+    // Two-beat entry: arrive larger than final, hold, then settle.
+    //
+    // A single beat — appear at final size and stop — is what makes an
+    // otherwise correct animation feel flat. Expressive motion arrives
+    // with weight and comes to rest, which is two events separated by a
+    // pause, not one eased curve. Set to 1 for the single-beat behaviour.
+    //
+    // 1.5 is the ratio Material's own expressive examples use between the
+    // arriving and resting size; below about 1.2 the second beat stops
+    // reading as a settle and just looks like a slow curve.
+    property real arriveScale: 1.5
+    property int settlePause: 90
+
     // Width of one item. Required whenever the items are uniform, which is
     // the case this component exists for.
     //
@@ -88,29 +101,45 @@ ListView {
     }
 
     add: Transition {
-        ParallelAnimation {
-            NumberAnimation {
-                property: "opacity"
-                from: 0
-                to: 1
-                duration: Motion.durationFor(Motion.Fade)
-                easing.type: Easing.BezierSpline
-                easing.bezierCurve: Motion.curveFor(Motion.Fade)
+        SequentialAnimation {
+            ParallelAnimation {
+                NumberAnimation {
+                    property: "opacity"
+                    from: 0
+                    to: 1
+                    duration: Motion.durationFor(Motion.Fade)
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: Motion.curveFor(Motion.Fade)
+                }
+                NumberAnimation {
+                    property: "scale"
+                    from: root.fromScale
+                    to: root.arriveScale
+                    duration: Motion.dur.fastSpatial
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: Motion.curve.fastSpatial
+                }
+                NumberAnimation {
+                    property: "x"
+                    from: root.travel
+                    duration: Motion.durationFor(Motion.Reveal)
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: Motion.curveFor(Motion.Reveal)
+                }
             }
+
+            // The pause is the point. Without it the two beats blur into
+            // one long curve and the arrival loses its weight.
+            PauseAnimation {
+                duration: Motion.ms(root.settlePause)
+            }
+
             NumberAnimation {
                 property: "scale"
-                from: root.fromScale
                 to: 1
-                duration: Motion.durationFor(Motion.Reveal)
+                duration: Motion.dur.fastSpatial
                 easing.type: Easing.BezierSpline
-                easing.bezierCurve: Motion.curveFor(Motion.Reveal)
-            }
-            NumberAnimation {
-                property: "x"
-                from: root.travel
-                duration: Motion.durationFor(Motion.Reveal)
-                easing.type: Easing.BezierSpline
-                easing.bezierCurve: Motion.curveFor(Motion.Reveal)
+                easing.bezierCurve: Motion.curve.fastSpatial
             }
         }
     }
