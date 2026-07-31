@@ -84,6 +84,11 @@ builds delegates inside its viewport, so binding width to `contentWidth`
 closes a loop: no width, no delegates, no content, no width, nothing
 drawn. Given `itemWidth` the row computes its width from the count instead.
 
+For the same reason the row's width follows the count instantly as items
+arrive, and animates only as they leave. A viewport still animating open
+does not contain the item just appended, so the add transition is skipped
+for it and the item snaps into place while everything around it moves.
+
 ## Demo
 
 ```sh
