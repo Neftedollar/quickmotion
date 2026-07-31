@@ -1,6 +1,13 @@
 module QuickMotion
 singleton Motion 1.0 Motion.qml
+
 Anim 1.0 Anim.qml
 NumberAnim 1.0 NumberAnim.qml
 ColourAnim 1.0 ColourAnim.qml
+
 AnimatedRow 1.0 AnimatedRow.qml
+Shake 1.0 Shake.qml
+Pressable 1.0 Pressable.qml
+Stagger 1.0 Stagger.qml
+Reveal 1.0 Reveal.qml
+SlideIn 1.0 SlideIn.qml

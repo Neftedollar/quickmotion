@@ -45,6 +45,23 @@ ListView {
     property real arriveScale: 1.5
     property int settlePause: 90
 
+    // Per-item variation, 0 to 1. Each item arrives slightly differently:
+    // a little larger or smaller, a beat sooner or later.
+    //
+    // Identical items animating identically read as stamped out; a small
+    // spread reads as individual things arriving. Keep it small — past
+    // about 0.3 it stops looking varied and starts looking unreliable.
+    property real jitter: 0
+
+    // Deterministic per index rather than Math.random(), so an item that
+    // is rebuilt does not jump to a different variation mid-animation.
+    function _vary(index: int, spread: real): real {
+        if (jitter <= 0)
+            return 0;
+        const n = Math.sin(index * 12.9898) * 43758.5453;
+        return (n - Math.floor(n) - 0.5) * 2 * spread * jitter;
+    }
+
     // Width of one item. Required whenever the items are uniform, which is
     // the case this component exists for.
     //
@@ -114,7 +131,7 @@ ListView {
                 NumberAnimation {
                     property: "scale"
                     from: root.fromScale
-                    to: root.arriveScale
+                    to: root.arriveScale + root._vary(root.count, 0.25)
                     duration: Motion.dur.fastSpatial
                     easing.type: Easing.BezierSpline
                     easing.bezierCurve: Motion.curve.fastSpatial
@@ -131,7 +148,7 @@ ListView {
             // The pause is the point. Without it the two beats blur into
             // one long curve and the arrival loses its weight.
             PauseAnimation {
-                duration: Motion.ms(root.settlePause)
+                duration: Motion.ms(root.settlePause) + Motion.ms(root._vary(root.count, 40))
             }
 
             // The settle deliberately does not use a spatial curve. Those

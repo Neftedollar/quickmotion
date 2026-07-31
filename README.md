@@ -95,14 +95,41 @@ arrive, and animates only as they leave. A viewport still animating open
 does not contain the item just appended, so the add transition is skipped
 for it and the item snaps into place while everything around it moves.
 
+## Components
+
+| | |
+|---|---|
+| `Anim`, `ColourAnim` | animations that take a role instead of a curve and a duration |
+| `AnimatedRow` | a row whose items animate in, out, and out of each other's way |
+| `Shake` | refusal feedback |
+| `Pressable` | a control that acknowledges a touch and settles when released |
+| `Reveal` | a container that grows and shrinks with its content |
+| `SlideIn` | a panel arriving from an edge |
+| `Stagger` | delays for cascading entries |
+
+`Shake` defaults to animating the anchor offset rather than `x`, because an
+item centred with anchors ignores `x` entirely — animating it there does
+nothing at all, silently.
+
+`SlideIn` uses different curves entering and leaving. Something arriving is
+worth watching and decelerates into place; something leaving should get out
+of the way. One curve for both makes dismissal feel reluctant.
+
+`AnimatedRow` takes a `jitter` from 0 to 1: each item arrives a little
+larger or smaller, a beat sooner or later. Identical items animating
+identically read as stamped out. The variation is derived from the index
+rather than random, so a rebuilt item does not jump to a different one
+mid-animation.
+
 ## Demo
 
 ```sh
-QML_IMPORT_PATH=. qs -p demo/dots.qml
+QML_IMPORT_PATH=. qs -p demo/gallery.qml   # everything at once
+QML_IMPORT_PATH=. qs -p demo/dots.qml      # just the row
 ```
 
-A row that fills and empties itself, which is the only way to actually see
-an exit animation.
+A row that fills and empties itself is the only way to actually see an exit
+animation.
 
 ## Licence
 
