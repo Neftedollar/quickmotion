@@ -13,6 +13,8 @@ MotionShape 1.0 MotionShape.qml
 Shake 1.0 Shake.qml
 Blink 1.0 Blink.qml
 Spin 1.0 Spin.qml
+ColourCycle 1.0 ColourCycle.qml
+EdgeLight 1.0 EdgeLight.qml
 Pressable 1.0 Pressable.qml
 Stagger 1.0 Stagger.qml
 Reveal 1.0 Reveal.qml

@@ -31,8 +31,15 @@ SequentialAnimation {
     // and much over a second stops reading as alive.
     property int period: Motion.ms(700)
 
-    loops: Animation.Infinite
-    running: false
+    // Infinite only while there is motion to have. A pulse is decoration,
+    // unlike Spin, so Motion.scale of 0 should switch it off — and it has to
+    // switch off by not looping, never by reaching the duration. A
+    // zero-length animation looping forever does not still the caret: it
+    // spins the event loop at whatever rate the CPU allows.
+    //
+    // A single pass at zero length settles on `from` and ends, which leaves
+    // the caret visible and the animation stopped.
+    loops: Motion.scale > 0 ? Animation.Infinite : 1
 
     // Returned to `from` when stopped, so a caret that stops blinking is
     // left visible rather than frozen at whatever opacity it had reached.

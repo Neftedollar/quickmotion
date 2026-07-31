@@ -187,6 +187,42 @@ neck goes faceted.
 The shaders are compiled at install time and shipped ready, so consumers
 need `qt6-shadertools` only to rebuild them.
 
+## Light along an edge
+
+```qml
+ColourCycle { id: hue }
+
+Rectangle { id: card; radius: 20 }
+
+EdgeLight {
+    anchors.fill: card
+    rounding: card.radius
+    lightColour: hue.colour
+    trackColour: "#212b36"    // the outline between passes
+}
+```
+
+The hard part is the travel, not the glow. Sweeping an angle around the
+centre is the obvious approach and it is wrong on anything but a square:
+equal angles cover unequal distance, so the light races along the short
+sides and crawls along the long ones — unmissable on a bar. `EdgeLight`
+parameterises the outline by arc length instead, four straight runs and
+four quarter arcs laid end to end, so the speed is the same the whole way
+round whatever the proportions.
+
+It draws only the outline and goes over what it traces, so give it the same
+geometry and the same corner radius. `count` puts several lights evenly
+around the lap and `tail` sets their length as a fraction of the gap
+between them, so they stay proportionate as the count changes.
+
+`ColourCycle` produces a colour and nothing else — no rectangle, no
+gradient, no opinion about what is painted. With `colours` empty it walks
+the hue circle; given a list it walks that, blending each into the next and
+wrapping from the last back to the first, so a three-colour list is a loop
+rather than a three-step sequence that snaps at the end. The hue circle is
+walked in HSV, which is not perceptually even: pass `colours` when the
+exact hues matter.
+
 ## Reduced motion
 
 `Motion.scale` multiplies every duration, and 0 disables animation
@@ -216,6 +252,8 @@ Motion.scale = animationsEnabled ? 1 : 0
 | `Stagger` | delays for cascading entries |
 | `MotionShape` | a drawn shape, optionally resolving to a circle |
 | `Genie` | a surface poured into a point, the macOS way |
+| `ColourCycle` | a colour that keeps moving: a rainbow, or a lap round a palette |
+| `EdgeLight` | light travelling along an edge |
 
 Edge enums are spelled `TopEdge`, `BottomEdge`, `LeftEdge`, `RightEdge`
 rather than the obvious four names. `Item` already defines `Top`, `Bottom`,
@@ -265,6 +303,7 @@ mid-animation.
 QML_IMPORT_PATH=. qs -p demo/gallery.qml   # everything at once
 QML_IMPORT_PATH=. qs -p demo/dots.qml      # just the row
 QML_IMPORT_PATH=. qs -p demo/genie.qml     # four docks, four directions
+QML_IMPORT_PATH=. qs -p demo/colour.qml    # edge lights and colour cycles
 ```
 
 A row that fills and empties itself is the only way to actually see an exit
