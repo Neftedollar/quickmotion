@@ -62,10 +62,29 @@ ListView {
     // item sits outside the shrunken viewport by definition.
     cacheBuffer: 4000
 
+    // Width follows the count instantly on the way up and animates only
+    // on the way down.
+    //
+    // Animating growth looks tempting and quietly breaks the add
+    // transition: a ListView runs transitions only for items inside its
+    // viewport, and a viewport still animating open does not contain the
+    // item that was just appended. The item then appears fully formed in
+    // one frame while everything else animates, which reads as a glitch
+    // rather than as a decision.
     Behavior on implicitWidth {
+        enabled: root._shrinking
+
         Anim {
             role: Motion.Resize
         }
+    }
+
+    property bool _shrinking: false
+    property int _lastCount: 0
+
+    onCountChanged: {
+        _shrinking = count < _lastCount;
+        _lastCount = count;
     }
 
     add: Transition {
